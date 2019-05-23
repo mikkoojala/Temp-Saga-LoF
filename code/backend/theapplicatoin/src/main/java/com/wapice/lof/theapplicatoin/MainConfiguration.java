@@ -18,6 +18,7 @@ import org.springframework.jms.support.converter.MessageType;
 public class MainConfiguration {
 
 	public static final String MESSAGE_QUEUE_NAME = "temp";
+	public static final String PAYMENT_MESSAGE_QUEUE_NAME = "payment";
 	static final String JMS_LISTENER_FACTORY = "myFactory";
 
 	@Bean
