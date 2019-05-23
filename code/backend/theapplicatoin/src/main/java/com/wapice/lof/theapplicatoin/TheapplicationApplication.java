@@ -33,6 +33,8 @@ public class TheapplicationApplication implements InitializingBean, GreetingCont
 
 	@Override
 	public String greeting() {
-		return String.format("Hello from '%s'!", eurekaClient.getApplication(appName).getName());
+		return String.format("Hello from '%s' in port %s!", 
+				eurekaClient.getApplication(appName).getName(),
+				System.getProperties().get("server.port"));
 	}
 }
