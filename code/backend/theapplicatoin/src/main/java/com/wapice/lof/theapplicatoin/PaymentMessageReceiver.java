@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 public class PaymentMessageReceiver {
 
 	@JmsListener(destination = MainConfiguration.PAYMENT_MESSAGE_QUEUE_NAME, containerFactory = MainConfiguration.JMS_LISTENER_FACTORY)
-	public void receiveMessage(TextMessage msg) {
-		System.out.println("Received <" + msg + ">");
+	public void consumePaymentMessage(TextMessage paymentRequest) {
+		System.out.println("Payment message details: " + paymentRequest);
 		try {
-			System.out.println(msg.getText());
+			System.out.println("Payment request payload: " + paymentRequest.getText());
 		} catch (JMSException e) {
 			throw new RuntimeException();
 		}

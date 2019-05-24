@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -23,6 +25,9 @@ public class TheapplicationApplication implements InitializingBean, GreetingCont
 	@Value("${spring.application.name}")
 	private String appName;
 
+	@Autowired
+	ApplicationContext context;
+
 	public static void main(String[] args) {
 		SpringApplication.run(TheapplicationApplication.class, args);
 	}
@@ -33,8 +38,16 @@ public class TheapplicationApplication implements InitializingBean, GreetingCont
 
 	@Override
 	public String greeting() {
-		return String.format("Hello from '%s' in port %s!", 
-				eurekaClient.getApplication(appName).getName(),
+
+		JmsTemplate paymentMessageProducerTemplate = context.getBean(JmsTemplate.class);
+
+		sendPaymentMessage(paymentMessageProducerTemplate);
+
+		return String.format("Hello from '%s' in port %s!", eurekaClient.getApplication(appName).getName(),
 				System.getProperties().get("server.port"));
+	}
+
+	private void sendPaymentMessage(JmsTemplate paymentMessageProducerTemplate) {
+		paymentMessageProducerTemplate.convertAndSend(MainConfiguration.PAYMENT_MESSAGE_QUEUE_NAME, "the paymnet");
 	}
 }
