@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="../turingtype.min.js"></script>
+        <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    </head>
+    <style>
+        body, html{
+            margin: 0;
+        }
+        
+        body{
+            padding: 20px;
+        }
+        
+        .text-container{
+            height: 100%;
+            box-sizing: border-box;
+            white-space: pre;
+            display: block;
+            background-color: white;
+        }
+    </style>
+    <body>
+        <pre>
+        <code id="text" class="text-container java">
+        
+        </code></pre>
+        
+        <script>
+        
+            hljs.initHighlightingOnLoad();
+            
+            var filesToWrite = ["TempReceiver.java"];
+            var delayBetweenFiles = 1500;
+            
+            function getFileContents(file){
+                return new Promise(resolve => {
+                    var x = new XMLHttpRequest();
+                    x.onreadystatechange = function(){
+                        if(x.readyState == 4 && x.status == 200){
+                            var contents = x.responseText;
+                            resolve(contents);
+                        }
+                    }
+                    x.open("get", file, true);
+                    x.send();
+                });
+            }
+            
+            function writeToUi(targetElement, text, speed, accuracy){
+                return new Promise(resolve => {
+                    new TuringType(targetElement, text, {interval: speed, accuracy: accuracy, callback: function(){
+                        resolve();
+                    }});
+                });
+            }
+            
+            function delay(d){
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve();
+                    },d) 
+                });
+            }
+            
+            async function writeMultipleFiles(fileArray){
+                for(var file of fileArray){
+                    var content = await getFileContents(file);
+                    await writeToUi(document.getElementById("text"), content, 20, 0.9);
+                    await delay(delayBetweenFiles);
+                    document.getElementById("text").innerText = "";
+                }
+            }
+            
+            window.addEventListener("load", function(){
+                writeMultipleFiles(filesToWrite);
+            });
+        
+        </script>
+    </body>
+</html>
